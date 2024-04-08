@@ -1,0 +1,1 @@
+This is a sentence... Strip the sentence of punctuations while turning all upper cases to lower cases. Split the sentence with spaces. Then count how many words are in the sentence. Finally, show what the most frequently used word is. Nice Nicee Nice nice nice NICE!!! nice nice

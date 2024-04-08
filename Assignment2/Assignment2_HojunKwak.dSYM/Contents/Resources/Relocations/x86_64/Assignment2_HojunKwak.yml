@@ -1,0 +1,15 @@
+---
+triple:          'x86_64-apple-darwin'
+binary-path:     '/Users/hkwak60/Desktop/SUNY/SUNY2024/CSE320/Homework/Assignment2/Assignment2_HojunKwak'
+relocations:
+  - { offsetInCU: 0x26, offset: 0x26, size: 0x8, addend: 0x0, symName: _birthday, symObjAddr: 0x0, symBinAddr: 0x100002E00, symSize: 0x30 }
+  - { offsetInCU: 0xB1, offset: 0xB1, size: 0x8, addend: 0x0, symName: _birthday, symObjAddr: 0x0, symBinAddr: 0x100002E00, symSize: 0x30 }
+  - { offsetInCU: 0xF1, offset: 0xF1, size: 0x8, addend: 0x0, symName: _sum, symObjAddr: 0x30, symBinAddr: 0x100002E30, symSize: 0x50 }
+  - { offsetInCU: 0x151, offset: 0x151, size: 0x8, addend: 0x0, symName: _average, symObjAddr: 0x80, symBinAddr: 0x100002E80, symSize: 0x20 }
+  - { offsetInCU: 0x187, offset: 0x187, size: 0x8, addend: 0x0, symName: _fac, symObjAddr: 0xA0, symBinAddr: 0x100002EA0, symSize: 0x50 }
+  - { offsetInCU: 0x1AF, offset: 0x1AF, size: 0x8, addend: 0x0, symName: _add, symObjAddr: 0xF0, symBinAddr: 0x100002EF0, symSize: 0x30 }
+  - { offsetInCU: 0x1E1, offset: 0x1E1, size: 0x8, addend: 0x0, symName: _sub, symObjAddr: 0x120, symBinAddr: 0x100002F20, symSize: 0x30 }
+  - { offsetInCU: 0x213, offset: 0x213, size: 0x8, addend: 0x0, symName: _mul, symObjAddr: 0x150, symBinAddr: 0x100002F50, symSize: 0x30 }
+  - { offsetInCU: 0x245, offset: 0x245, size: 0x8, addend: 0x0, symName: _utilize_macros, symObjAddr: 0x180, symBinAddr: 0x100002F80, symSize: 0xC0 }
+  - { offsetInCU: 0x277, offset: 0x277, size: 0x8, addend: 0x0, symName: _main, symObjAddr: 0x240, symBinAddr: 0x100003040, symSize: 0xAFE }
+...
