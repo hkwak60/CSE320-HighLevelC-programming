@@ -1,7 +1,7 @@
 /*
 * File: assignment4.c
-* Owner: 
-* Date: 4.2.2024
+* Owner: Hojun Kwak
+* Date: 4.9.2024
 * Description: Implementing a shell program in C
 */
 
@@ -54,7 +54,8 @@ int main() {
         input[strcspn(input, "\n")] = '\0';
 
         // TODO: Exit the shell if the user enters "exit"
-
+        if(strcmp(input, "exit") == 0)
+            break;
         // Parse the input into command and arguments
         command_line_parse(input, command, arguments);
 
@@ -66,7 +67,7 @@ int main() {
 
         for (int i = 0; arguments[i] != NULL; i++) {
             if (strcmp(arguments[i], "<") == 0) {
-		printf("Input Redirection Detected!\n");
+		        printf("Input Redirection Detected!\n");
                 // Input redirection
                 arguments[i] = NULL; // Remove "<" from the argument list
                 input_fd = open(arguments[i + 1], O_RDONLY);
@@ -75,8 +76,9 @@ int main() {
                     exit(EXIT_FAILURE);
                 }
                 i++;
-            } else if (strcmp(arguments[i], ">") == 0) {
-		printf("Output Redirection Detected!\n");
+            } 
+            else if (strcmp(arguments[i], ">") == 0) {
+		        printf("Output Redirection Detected!\n");
                 // Output redirection
                 arguments[i] = NULL; // Remove ">" from the argument list
                 output_fd = open(arguments[i + 1], O_WRONLY | O_CREAT | O_TRUNC, 0666);
@@ -86,7 +88,7 @@ int main() {
                 }
                 i++;
             } else if (strcmp(arguments[i], "|") == 0) {
-		printf("Pipe Detected!\n");
+		        printf("Pipe Detected!\n");
                 // Pipe
                 arguments[i] = NULL; // Split the command into two parts
                 if (pipe(pipes) == -1) {
@@ -95,9 +97,37 @@ int main() {
                 }
 
                 // TODO: Fork a child process for the left side of the pipe
-
+                pid_t left = fork();
+                if(left==0){
+                    close(pipes[0]);
+                    dup2(pipes[1], 0);
+                    close(pipes[1]);
+                    char *leftargs[MAX_ARGUMENTS];
+                    for(int j = 1; arguments[j]!=NULL;j++){
+                        leftargs[j-1]=arguments[j];
+                    }
+                    command_line_execute(arguments[0],leftargs);
+                }
                 // TODO: Fork another child process for the right side of the pipe
-
+                else{
+                    pid_t right = fork();
+                    if(right==0){
+                        close(pipes[1]);
+                        dup2(pipes[0], 1);
+                        close(pipes[0]);
+                        char *rightargs[MAX_ARGUMENTS];
+                        for(int j = i+2; arguments[j]!=NULL;j++){
+                            rightargs[j-1]=arguments[j];
+                        }
+                        command_line_execute(arguments[i+1],rightargs);
+                    }
+                    else{
+                        close(pipes[0]);
+                        close(pipes[1]);
+                        waitpid(left, NULL, 0);
+                        waitpid(right, NULL, 0);
+                    }
+                }
             }
         }
 
@@ -123,8 +153,18 @@ int main() {
             command_line_execute(command, arguments);
         } else {
             // Parent process
-	    // TODO: Wait child process and check if it is exited or terminated
+	        // TODO: Wait child process and check if it is exited or terminated
+            int status;
+            if (waitpid(pid, &status, 0) == -1) {
+                perror("waitpid");
+                return 1;
+            }
 
+            if (WIFEXITED(status)) {
+                printf("Child process exited with status: %d\n", WEXITSTATUS(status));
+            } else {
+                printf("Child process terminated abnormally\n");
+            }
         }
     }
 

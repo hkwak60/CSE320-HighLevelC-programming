@@ -1,7 +1,7 @@
 /*
 * File: assignment4.h
-* Owner: 
-* Date: 4.2.2024
+* Owner: Hojun Kwak
+* Date: 4.9.2024
 * Description: Implementing a shell program in C
 */
 #ifndef ASSIGNMENT4

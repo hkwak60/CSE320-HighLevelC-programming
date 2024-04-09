@@ -1,0 +1,7 @@
+  PID TTY           TIME CMD
+29954 ttys007    0:00.03 login -pf hkwak60
+29956 ttys007    0:00.05 -zsh
+34450 ttys010    0:00.03 login -pf hkwak60
+34451 ttys010    0:00.09 -zsh
+37330 ttys010    0:00.01 ./assignment4
+37441 ttys010    0:00.01 ps -a
