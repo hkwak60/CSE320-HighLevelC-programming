@@ -1,7 +1,7 @@
 /*
 * File: assignment4.c
-* Owner: Hojun Kwak
-* Date: 4.11.2024
+* Owner: 
+* Date: 4.2.2024
 * Description: Implementing a shell program in C
 */
 
@@ -97,52 +97,68 @@ int main() {
                     perror("Pipe creation failed");
                     exit(EXIT_FAILURE);
                 }
+
                 pid_t left, right;
-                // TODO: Fork a child process for the left side of the pipe
-                left = fork();
-                if (left == -1) {                               //Error Handling
-                    perror("fork");
-                    exit(EXIT_FAILURE);
-                } else if (left == 0) {
-                    close(pipes[0]);                            // Close read end of the pipe
-                    dup2(pipes[1], STDOUT_FILENO);              // Make left child write on pipe
-                    command_line_execute(command, arguments);   // Execute command 1
-                } else {
-                    waitpid(left, NULL, 0);
-                    right = fork();                             // TODO: Fork another child process for the right side of the pipe
-                    if (right == -1) {                          //Error Handling
+                    left = fork();
+                    if (left == -1) {
                         perror("fork");
                         exit(EXIT_FAILURE);
-                    } else if (right == 0) {
-                        close(pipes[1]);                        // Close write end of the pipe
-                        dup2(pipes[0], STDIN_FILENO);           // Make right child red from pipe
-                        strcpy(command, arguments[i+1]);        // Re-initialize command and arguments
-                        int argnum = 0;
-                        for(int j = i+1;arguments[j]!=NULL;j++){
-                            arguments[argnum] = arguments[j];
-                            argnum++;
-                        }
-                        arguments[argnum]=NULL;
-                        // Execute command 2
-                        command_line_execute(command, arguments);// Execute with new command and arguments
+                    } else if (left == 0) {
+                        // Child process 1
+                        close(pipes[0]);  // Close read end of the pipe
+                        dup2(pipes[1], STDOUT_FILENO);
+                        // close(pipes[1]);
+                        // Execute command 1
+                        command_line_execute(command, arguments);
                     } else {
-                        // Parent process
-                        // Close unused file descriptors
-                        close(pipes[0]);
-                        close(pipes[1]);
-                        // Wait for child processes to finish
-                        int rstatus;
-                        if (waitpid(right, &rstatus, 0) == -1) { //Error Handling
-                            perror("waitpid");
-                            return 1;
-                        }
-                        if (WIFEXITED(rstatus)) {
-                            printf("Pipe process exited with status: %d\n", WEXITSTATUS(rstatus));
+                        // Fork the second child process
+                        right = fork();
+                        if (right == -1) {
+                            perror("fork");
+                            exit(EXIT_FAILURE);
+                        } else if (right == 0) {
+                            // Child process 2
+                            close(pipes[1]);  // Close write end of the pipe
+                            dup2(pipes[0], STDIN_FILENO);
+                            // close(pipes[0]);
+                            strcpy(command, arguments[i+1]);
+                            int argnum = 0;
+                            for(int j = i+1;arguments[j]!=NULL;j++){
+                                if(strcmp(arguments[j],"|")==0){
+                                    perror("Too many Pipes(max: 1)");
+                                    exit(EXIT_FAILURE);
+                                }
+                                arguments[argnum] = arguments[j];
+                                argnum++;
+                            }
+                            arguments[argnum]=NULL;
+                            // Execute command 2
+                            command_line_execute(command, arguments);
                         } else {
-                            printf("Pipe process terminated abnormally\n");
+                            // Parent process
+                            // Close unused file descriptors
+                            close(pipes[0]);
+                            close(pipes[1]);
+                            // Wait for child processes to finish
+                            int lstatus,rstatus;
+                            waitpid(left, &lstatus, 0);
+                            waitpid(right, &rstatus, 0);
+                            if (WIFEXITED(lstatus)) {
+                                printf("Left process exited with status: %d\n", WEXITSTATUS(lstatus));
+                            } else {
+                                printf("Left process terminated abnormally\n");
+                            }
+                            if (WIFEXITED(rstatus)) {
+                                printf("Right process exited with status: %d\n", WEXITSTATUS(rstatus));
+                            } else {
+                                printf("Right process terminated abnormally\n");
+                            }
                         }
                     }
-                }
+                // TODO: Fork a child process for the left side of the pipe
+                
+                // TODO: Fork another child process for the right side of the pipe
+
             }
         }
 
@@ -159,6 +175,7 @@ int main() {
                     dup2(input_fd, 0);
                     close(input_fd);
                 }
+
                 // Redirect output if needed
                 if (output_fd != 1) {
                     dup2(output_fd, 1);
@@ -167,9 +184,9 @@ int main() {
                 command_line_execute(command, arguments);
             } else {
                 // Parent process
-                // TODO: Wait child process and check if it is exited or terminated
+            // TODO: Wait child process and check if it is exited or terminated
                 int status;
-                if (waitpid(pid, &status, 0) == -1) { //Error Handling
+                if (waitpid(pid, &status, 0) == -1) {
                     perror("waitpid");
                     return 1;
                 }
@@ -183,5 +200,6 @@ int main() {
             piped = 0;
         }
     }
+
     return 0;
 }
