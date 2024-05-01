@@ -1,0 +1,7 @@
+1. Make sure your computer has a C language compiler and executionable environment.
+2. Either manually compile the code or use the Makefile file
+3. When the code is correctly compiled and run, "Word to count: " message will pop up
+4. Enter the word that you seek to find
+5. Enter the sentence you seek to find the word from
+6. Examine the results
+7. Enter "quit" when the program asks to input the word in order to terminate the program
