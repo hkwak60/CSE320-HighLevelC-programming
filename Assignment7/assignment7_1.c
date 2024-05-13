@@ -1,7 +1,7 @@
 /*
 * File: assignment7_1.c
-* Owner: Yoonseok Yang
-* Date: 04.25.2024
+* Owner: Hojun Kwak
+* Date: 05.01.2024
 * Description: Implement the producer-consumer problem using semaphores in C
 */
 
@@ -62,9 +62,10 @@ void* producer(void* vargp) {
     int i, j;
     for(i = 0; i < 2; i++) {
         long s = 0;
-        for(j = 0; j < 100; j++)
+        for(j = 0; j < 100; j++){
             s += j, sbuf_insert(sp, j);
-	printf("producer: sum: %ld, size: %d\n", s, sbuf_size(sp));
+	        printf("producer: sum: %ld, size: %d\n", s, sbuf_size(sp));
+        }
     }
     pthread_exit(NULL);
 }
@@ -74,9 +75,10 @@ void* consumer(void* vargp) {
     int i, j;
     for(i = 0; i < 3; i++) {
         long s = 0;
-        for(j = 0; j < 10; j++)
+        for(j = 0; j < 10; j++){
             s += sbuf_remove(sp);
-        printf("consumer: sum: %ld, size: %d\n", s, sbuf_size(sp));
+            printf("consumer: sum: %ld, size: %d\n", s, sbuf_size(sp));
+        }
     }
     pthread_exit(NULL);
 }

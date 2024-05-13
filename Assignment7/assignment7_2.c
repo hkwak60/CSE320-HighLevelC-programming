@@ -1,7 +1,7 @@
 /*
 * File: assignment7_2.c
-* Owner: Yoonseok Yang
-* Date: 04.25.2024
+* Owner: Hojun Kwak
+* Date: 05.01.2024
 * Description: Implement the first readers-writers problem using semaphores in C
 */
 
@@ -11,8 +11,8 @@
 
 typedef struct {
     sem_t mutex;
-    sem_t wlock;
-    int readcount;
+    sem_t rlock;
+    int writecount;
 } rwlock;
 
 typedef struct {
@@ -23,37 +23,37 @@ typedef struct {
 
 void rwlock_init(rwlock *lock) {
     sem_init(&lock->mutex, 0, 1);
-    sem_init(&lock->wlock, 0, 1);
-    lock->readcount = 0;
+    sem_init(&lock->rlock, 0, 1);
+    lock->writecount = 0;
 }
 
 void rwlock_deinit(rwlock *lock) {
     sem_destroy(&lock->mutex);
-    sem_destroy(&lock->wlock);
+    sem_destroy(&lock->rlock);
 }
 
 void acquire_reader_lock(rwlock *lock) {
-    sem_wait(&lock->mutex);
-    lock->readcount++;
-    if(lock->readcount == 1) //if this is the first reader
-        sem_wait(&lock->wlock);//wait for a writer to finish or block writers
-    sem_post(&lock->mutex);
+    sem_wait(&lock->rlock);
 }
 
 void release_reader_lock(rwlock *lock) {
-    sem_wait(&lock->mutex);
-    lock->readcount--;
-    if(lock->readcount == 0)   //if this is the last reader
-        sem_post(&lock->wlock);//unblock any waiting writers
-    sem_post(&lock->mutex);
+    sem_post(&lock->rlock);
 }
 
 void acquire_writer_lock(rwlock *lock) {
-    sem_wait(&lock->wlock);
+    sem_wait(&lock->mutex);
+    lock->writecount++;
+    if(lock->writecount == 1) //if this is the first writer
+        sem_wait(&lock->rlock);//wait for a reader to finish or block readers
+    sem_post(&lock->mutex);
 }
 
 void release_writer_lock(rwlock *lock) {
-    sem_post(&lock->wlock);
+    sem_wait(&lock->mutex);
+    lock->writecount--;
+    if(lock->writecount == 0)   //if this is the last writer
+        sem_post(&lock->rlock); //unblock any waiting readers
+    sem_post(&lock->mutex);
 }
 
 void* reader(void *vargp) {
