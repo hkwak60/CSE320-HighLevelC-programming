@@ -1,2 +1,4 @@
-server : 
-	gcc -o as6 assignment6.c
+compile : 
+	gcc -o as8 assignment8.c -pthread
+run :
+	./as8

@@ -1,0 +1,4 @@
+1. Make sure your device is capable of compiling and running multithread processes
+2. Compile and run with the Makefile
+3. Examine the output of the program
+4. Extra: Change the sleep time in the barber or main to see different outcomes
